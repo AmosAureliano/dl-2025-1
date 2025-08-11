@@ -11,45 +11,43 @@ class LogisticNeuron:
         self.loss_history = []
     
     def sigmoid(self, z):
-
-        ### START CODE HERE ###
-        ### TODO
-        s = None
-        ### END CODE HERE ###
+        # Sigmoid function
+        s = 1 / (1 + np.exp(-z))
         return s
     
     def predict_proba(self, X):
-        ### START CODE HERE ###
-        ### TODO
-        a = None
-        ### END CODE HERE ###
+        # Compute the probability estimates for X
+        z = np.dot(X, self.weights) + self.bias
+        a = self.sigmoid(z)
         return a
     
     def predict(self, X):
-        prediction = None
+        # Return class predictions (0 or 1)
+        proba = self.predict_proba(X)
+        prediction = (proba >= 0.5).astype(int)
         return prediction
     
     def train(self, X, y):
+        m = X.shape[0]
+        eps = 1e-8
         for _ in range(self.epochs):
-            ### START CODE HERE ###
-            ### TODO: Implement forward pass
-            y_pred = None
+            # Forward pass
+            y_pred = self.predict_proba(X)
 
-            ### TODO: Compute error
-            error = None
+            # Compute error
+            error = y_pred - y
 
-            ### TODO: Compute gradients
-            grad_w = None
-            grad_b = None
+            # Compute gradients
+            grad_w = (1/m) * np.dot(X.T, error)
+            grad_b = (1/m) * np.sum(error)
 
-            ### TODO: Update weights and bias
-            self.weights = None
-            self.bias = None
+            # Update weights and bias
+            self.weights -= self.learning_rate * grad_w
+            self.bias -= self.learning_rate * grad_b
 
-            ### TODO: Compute loss and append to loss_history
-            loss = None
+            # Compute loss and append to loss_history
+            loss = -np.mean(y * np.log(y_pred + eps) + (1 - y) * np.log(1 - y_pred + eps))
             self.loss_history.append(loss)
-            ### END CODE HERE ###
 
 def generate_dataset():
     X, y = make_blobs(n_samples=200, centers=2, random_state=42, cluster_std=2.0)
